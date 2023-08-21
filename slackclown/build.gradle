@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.14'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'checkstyle'
+
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'com.puppycrawl.tools:checkstyle:8.44' // Replace with the desired Checkstyle version
+    implementation 'org.modelmapper:modelmapper:2.4.4'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+checkstyle {
+    configFile rootProject.file('checkstyle.xml') // Specify the path to your Checkstyle configuration file
+    toolVersion '8.44' // Use the same Checkstyle version as the dependency
+    showViolations true // Optional: Display violations in console
+}
+repositories {
+    mavenCentral() // This is the default Maven repository, where ModelMapper is hosted
+}
