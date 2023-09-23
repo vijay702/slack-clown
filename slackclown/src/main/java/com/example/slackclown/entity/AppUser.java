@@ -21,7 +21,6 @@ public class AppUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String firstName;
 
     private String lastName;
@@ -44,5 +43,7 @@ public class AppUser implements Serializable {
 
     private String aboutMe;
 
-    private boolean away;
+    private Boolean away;
+
+    private String bio;
 }

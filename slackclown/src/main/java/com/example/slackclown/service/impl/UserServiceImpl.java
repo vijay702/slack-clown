@@ -38,5 +38,4 @@ public class UserServiceImpl implements UserService {
                 return "user created sucessfully";
             });
     }
-
 }
