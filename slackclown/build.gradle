@@ -33,6 +33,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'com.puppycrawl.tools:checkstyle:8.44' // Replace with the desired Checkstyle version
     implementation 'org.modelmapper:modelmapper:2.4.4'
+    implementation "org.springframework.boot:spring-boot-starter-mail"
 }
 
 tasks.named('test') {

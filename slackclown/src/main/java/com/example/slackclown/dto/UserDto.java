@@ -24,7 +24,7 @@ public class UserDto {
 
     private String password;
 
-    private String resetToken;
+    private String otp;
 
     private MultipartFile profilePictureData;
 
