@@ -31,7 +31,7 @@ public class AppUser implements Serializable {
 
     private String password;
 
-    private String resetToken;
+    private String otp;
 
     private String profilePicture;
 
