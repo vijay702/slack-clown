@@ -38,5 +38,7 @@ public class UserDto {
 
     private String aboutMe;
 
-    private boolean away;
+    private String bio;
+
+    private Boolean away;
 }
