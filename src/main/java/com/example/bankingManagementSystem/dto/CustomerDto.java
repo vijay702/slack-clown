@@ -1,12 +1,14 @@
 package com.example.bankingManagementSystem.dto;
 
+import com.example.bankingManagementSystem.enums.AccountType;
+import com.example.bankingManagementSystem.enums.CustomerType;
+import com.example.bankingManagementSystem.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -29,10 +31,14 @@ public class CustomerDto {
 
     private String profilePicture;
 
-    private String status;
+    private Status status;
 
     private String password;
 
     private String otp;
+
+    private CustomerType customerType;
+
+    private AccountType accountType;
 
 }

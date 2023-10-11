@@ -17,9 +17,9 @@ public class CustomerController {
     @Autowired
     JwtTokenValidation jwtTokenValidation;
 
-    @PostMapping("/signup")
-    public Object customerSignUp(@ModelAttribute CustomerDto customerDto) {
-        return customerService.createCustomer(customerDto);
+    @PostMapping("/create_user")
+    public Object createUser(@ModelAttribute CustomerDto customerDto){
+        return customerService.createUser(customerDto);
     }
 
     @PostMapping("/customer_login")
@@ -42,7 +42,7 @@ public class CustomerController {
         return customerService.resetPasswordWithOtp(resetPasswordDto);
     }
 
-    @PutMapping("reset-password")
+    @PutMapping("/reset-password")
     public Object resetPasswordWithOldPassword(@RequestBody ResetPasswordDto resetPasswordDto){
         String token = "";
         String usernameFromJwt = String.valueOf(jwtTokenValidation.validateToken(token));

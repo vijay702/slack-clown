@@ -1,5 +1,6 @@
 package com.example.bankingManagementSystem.entity;
 
+import com.example.bankingManagementSystem.enums.CustomerType;
 import com.example.bankingManagementSystem.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,5 +55,9 @@ public class Customer implements Serializable {
 
     @Column(name = "one_time_password")
     private String otp;
+
+    @Column(name = "customer_type")
+    private CustomerType customerType;
+
 
 }

@@ -2,11 +2,16 @@ package com.example.bankingManagementSystem.service.impl;
 
 import com.example.bankingManagementSystem.auth.JwtTokenValidation;
 import com.example.bankingManagementSystem.converter.CustomerDtoConverter;
+import com.example.bankingManagementSystem.dto.AccountDto;
 import com.example.bankingManagementSystem.dto.EmailDto;
 import com.example.bankingManagementSystem.dto.ResetPasswordDto;
 import com.example.bankingManagementSystem.dto.CustomerDto;
 import com.example.bankingManagementSystem.email.EmailSender;
+import com.example.bankingManagementSystem.entity.Account;
 import com.example.bankingManagementSystem.entity.Customer;
+import com.example.bankingManagementSystem.enums.AccountType;
+import com.example.bankingManagementSystem.enums.CustomerType;
+import com.example.bankingManagementSystem.repository.AccountRepository;
 import com.example.bankingManagementSystem.repository.CustomerRepository;
 import com.example.bankingManagementSystem.response.Response;
 import com.example.bankingManagementSystem.service.CustomerService;
@@ -19,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -38,6 +45,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     CustomerDtoConverter customerDtoConverter;
@@ -53,17 +62,36 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public Object createCustomer(CustomerDto customerDto) {
-        return customerRepository.findByEmail(customerDto.getEmail())
-                .map(existingUser -> Response.BAD_REQUEST("Customer already exist"))
-                .orElseGet(() -> {
-                    String profilePictureData = imageUploaderUtill.imageUploader(customerDto.getProfilePictureData(),
-                            USER);
-                    Customer customer = customerDtoConverter.dtoToEntity(customerDto);
-                    customer.setProfilePicture(profilePictureData);
-                    customerRepository.save(customer);
-                    return Response.OK();
-                });
+    public Object createUser(CustomerDto customerDto) {
+        Optional<Customer> existingUser = customerRepository.findByEmail(customerDto.getEmail());
+        if (existingUser.isPresent()) {
+            createAccount(existingUser.get(), customerDto.getAccountType());
+            return HttpStatus.CREATED;
+        }
+        if (customerDto.getCustomerType().equals(CustomerType.EMPLOYEE)) {
+            createCustomer(customerDto);
+            return HttpStatus.CREATED;
+        }
+        Customer customer = createCustomer(customerDto);
+        createAccount(customer, customerDto.getAccountType());
+        return HttpStatus.CREATED;
+    }
+
+    private Customer createCustomer(CustomerDto customerDto) {
+        String profilePictureData = imageUploaderUtill.imageUploader(customerDto.getProfilePictureData(), USER);
+        Customer customer = customerDtoConverter.dtoToEntity(customerDto);
+        customer.setProfilePicture(profilePictureData);
+        return customerRepository.save(customer);
+    }
+
+    private void createAccount(Customer customer, AccountType accountType) {
+        Account account = Account.builder()
+                .accountType(accountType)
+                .accountBalance(BigDecimal.valueOf(1000))
+                .accountNumber(generateUniqueAccountNumber())
+                .customer(customer)
+                .build();
+        accountRepository.save(account);
     }
 
     @Override
@@ -88,7 +116,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
         customerRepository.updateUser(customerDto.getName(), customerDto.getAddress(), customerDto.getPhoneNumber(),
                 customerDto.getDob(), customerDto.getEmail(), customerDto.getProfilePicture(),
-                customerDto.getStatus(), customerDto.getPassword(), customerDto.getOtp(), id);
+                customerDto.getStatus(), customerDto.getPassword(), customerDto.getOtp(), customerDto.getCustomerType(), id);
         return Response.OK();
     }
 
@@ -127,7 +155,7 @@ public class CustomerServiceImpl implements CustomerService {
             return Response.NOT_FOUND("Customer not found");
         }
         Customer customer = optionalCustomer.get();
-        if (!Objects.equals(resetPasswordDto.getOldPassword(), customer.getPassword())){
+        if (!Objects.equals(resetPasswordDto.getOldPassword(), customer.getPassword())) {
             return Response.BAD_REQUEST("The Old password does not exist!");
         }
         if (!Objects.equals(resetPasswordDto.getNewPassword(), resetPasswordDto.getConfirmPassword())) {
@@ -147,4 +175,14 @@ public class CustomerServiceImpl implements CustomerService {
         int otp = random.nextInt(max - min + 1) + min;
         return String.valueOf(otp);
     }
+
+
+    private String generateUniqueAccountNumber() {
+        String prefix = "EMINDS";
+        String branchCode = "1234"; // Example branch code
+        String uniqueIdentifier = UUID.randomUUID().toString().substring(0, 8); // Generate a unique identifier
+
+        return prefix + branchCode + uniqueIdentifier;
+    }
+
 }

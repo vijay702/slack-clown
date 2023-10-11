@@ -6,7 +6,7 @@ import com.example.bankingManagementSystem.dto.CustomerDto;
 
 public interface CustomerService {
 
-    Object createCustomer(CustomerDto customerDto);
+    Object createUser(CustomerDto customerDto);
 
     Object customerLogin(CustomerDto customerDto);
 
